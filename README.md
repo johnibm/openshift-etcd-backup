@@ -1,9 +1,10 @@
 # openshift-etcd-backup
-<font size=3>
-Backup OpenShift etcd Database
+<font size=20>
+Projec to test OpenShift etcd database backup
 </font>
 
-## Testing etcd backup and restore 
+### Testing etcd backup and restore 
+This approach will use the recommnended etcd backup methodolgy from Redhat, along with an extra process to move etcd backup data to an external PVC.<br>
 
 ### Step 1: Implement OpenShift etcd backup via CronJob:
 ```
