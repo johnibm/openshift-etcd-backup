@@ -4,7 +4,7 @@ Backup OpenShift etcd Database
 
 # Introduction
 Testing etcd backup and restore <br>
-Reference:
+Reference: <br>
 https://cloud.redhat.com/blog/ocp-disaster-recovery-part-1-how-to-create-automated-etcd-backup-in-openshift-4.x
 
 ### Step 1: Implement OpenShift etcd backup via CronJob:
