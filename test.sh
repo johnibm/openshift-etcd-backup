@@ -1,0 +1,2 @@
+#oc exec $(oc get pods -lapp.kubernetes.io/name=openshift-etcd-backup-server -ojsonpath="{.items[0].metadata.name}" -n ocp-etcd-backup) -c server -n ocp-etcd-backup -- la -la
+oc exec $(oc get pods -l app=openshift-etcd-backup-server -ojsonpath="{.items[0].metadata.name}" -n ocp-etcd-backup) -c server -n ocp-etcd-backup -- ls -la
