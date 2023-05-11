@@ -6,16 +6,16 @@ metadata:
   name: openshift-etcd-backup-server-deployment
   namespace: ocp-etcd-backup
   labels:
-    app: openshift-etcd-backup
+    app: openshift-etcd-backup-server
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: openshift-etcd-backup
+      app: openshift-etcd-backup-server
   template:
     metadata:
       labels:
-        app: openshift-etcd-backup
+        app: openshift-etcd-backup-server
     spec: 
       #initContainers:
       #- name: init
@@ -27,7 +27,7 @@ spec:
       #    - name: etcd-backup-vol
       #      mountPath: /openshift_etcd_backup
       containers:
-      - name: openshift-etcd-backup-server
+      - name: server
         image: "registry.redhat.io/openshift4/ose-cli"
         imagePullPolicy: Always
         command: ['/bin/bash', '-c', 'while true; do sleep 30; done;']
