@@ -3,19 +3,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: etcd-backup-server-deployment
+  name: openshift-etcd-backup-server-deployment
   namespace: ocp-etcd-backup
   labels:
-    app: etcd-backup
+    app: openshift-etcd-backup
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: etcd-backup
+      app: openshift-etcd-backup
   template:
     metadata:
       labels:
-        app: etcd-backup
+        app: openshift-etcd-backup
     spec: 
       #initContainers:
       #- name: init
@@ -27,17 +27,17 @@ spec:
       #    - name: etcd-backup-vol
       #      mountPath: /openshift_etcd_backup
       containers:
-      - name: etcd-backup-server
+      - name: openshift-etcd-backup-server
         image: "registry.redhat.io/openshift4/ose-cli"
         imagePullPolicy: Always
         command: ['/bin/bash', '-c', 'while true; do sleep 30; done;']
         volumeMounts:                     
-          - name: etcd-backup-vol
+          - name: openshift-etcd-backup-vol
             mountPath: /openshift_etcd_backup
       volumes:
-        - name: etcd-backup-vol
+        - name: openshift-etcd-backup-vol
           persistentVolumeClaim:
-            claimName: etcd-backup-pvc                
+            claimName: openshift-etcd-backup-pvc                
       resources:
       requests:
         memory: "64Mi"
