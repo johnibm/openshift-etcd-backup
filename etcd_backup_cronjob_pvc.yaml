@@ -5,7 +5,7 @@ kind: Namespace
 metadata:
   name: ocp-etcd-backup
   labels:
-    app: openshift-backup
+    app: openshift-etcd-backup
     pod-security.kubernetes.io/enforce: privileged
     pod-security.kubernetes.io/audit: privileged
     pod-security.kubernetes.io/warn: privileged
@@ -17,17 +17,17 @@ metadata:
 kind: ServiceAccount
 apiVersion: v1
 metadata:
-  name: openshift-backup
+  name: openshift-etcd-backup
   namespace: ocp-etcd-backup
   labels:
-    app: openshift-backup
+    app: openshift-etcd-backup
 
 #Create Cluster Role
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: cluster-etcd-backup
+  name: openshift-etcd-backup
 rules:
 - apiGroups: [""]
   resources:
@@ -45,28 +45,28 @@ rules:
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: openshift-backup
+  name: openshift-etcd-backup
   labels:
-    app: openshift-backup
+    app: openshift-etcd-backup
 subjects:
   - kind: ServiceAccount
-    name: openshift-backup
+    name: openshift-etcd-backup
     namespace: ocp-etcd-backup
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: cluster-etcd-backup
+  name: openshift-etcd-backup
 #Set privileges for servcie account
-#oc adm policy add-scc-to-user privileged -z openshift-backup
+#oc adm policy add-scc-to-user privileged -z openshift-etcd-backup
 
 # Create PVC
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: etcd-backup-pvc
+  name: openshift-etcd-backup-pvc
   labels:
-    appname: openshift-backup
+    appname: openshift-etcd-backup
 spec:
   accessModes: [ "ReadWriteMany" ]
   storageClassName: "ocs-storagecluster-cephfs"
@@ -79,10 +79,10 @@ spec:
 kind: CronJob
 apiVersion: batch/v1
 metadata:
-  name: openshift-backup
+  name: openshift-etcd-backup
   namespace: ocp-etcd-backup
   labels:
-    app: openshift-backup
+    app: openshift-etcd-backup
 spec:
   schedule: "56 23 * * *"
   concurrencyPolicy: Forbid
@@ -91,13 +91,13 @@ spec:
   jobTemplate:
     metadata:
       labels:
-        app: openshift-backup
+        app: openshift-etcd-backup
     spec:
       backoffLimit: 0
       template:
         metadata:
           labels:
-            app: openshift-backup
+            app: openshift-etcd-backup
         spec:
           containers:
             - name: backup
@@ -110,18 +110,18 @@ spec:
                 #- oc get no -l node-role.kubernetes.io/master --no-headers -o name | xargs -I {} --  oc debug {} -- bash -c 'chroot /host sudo -E target_dir="$(date +"%m-%d-%Y-%H-%M-%S")" && chroot /host sudo -E mkdir -p -m 777 /openshift_etcd_backup/$target_dir && chroot /host sudo -E /usr/local/bin/cluster-backup.sh /openshift_etcd_backup/$target_dir && chroot /host sudo -E find /home/core/backup/ -type f -mmin +"1" -delete'
                 #- oc get no -l node-role.kubernetes.io/master --no-headers -o name | xargs -I {} --  oc debug {} -- bash -c 'chroot /host sudo -E /usr/local/bin/cluster-backup.sh /openshift_etcd_backup/$(date) && chroot /host sudo -E find /home/core/backup/ -type f -mmin +"1" -delete'
               volumeMounts:                     
-                - name: etcd-backup-vol
+                - name: openshift-etcd-backup-vol
                   mountPath: /openshift_etcd_backup
           volumes:
-            - name: etcd-backup-vol
+            - name: openshift-etcd-backup-vol
               persistentVolumeClaim:
-              claimName: etcd-backup-pvc   
+              claimName: openshift-etcd-backup-pvc   
           restartPolicy: "Never"
           terminationGracePeriodSeconds: 30
           activeDeadlineSeconds: 500
           dnsPolicy: "ClusterFirst"
-          serviceAccountName: "openshift-backup"
-          serviceAccount: "openshift-backup"
+          serviceAccountName: "openshift-etcd-backup"
+          serviceAccount: "openshift-etcd-backup"
 #Force CronJob to run
-#oc create job backup --from=cronjob/openshift-backup
+#oc create job backup --from=cronjob/openshift-etcd-backup
 
