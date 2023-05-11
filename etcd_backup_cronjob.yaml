@@ -1,4 +1,16 @@
 #Create Namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ocp-backup-etcd
+  labels:
+    app: openshift-backup
+    pod-security.kubernetes.io/enforce: privileged
+    pod-security.kubernetes.io/audit: privileged
+    pod-security.kubernetes.io/warn: privileged
+  annotations:
+    openshift.io/node-selector: ''
+    
 #Create Service Account
 ---
 kind: ServiceAccount
@@ -22,6 +34,7 @@ rules:
   verbs: ["get", "list"]
 - apiGroups: [""]
   resources:
+     - "namespaces"
      - "pods"
      - "pods/log"
   verbs: ["get", "list", "create", "delete", "watch"]
