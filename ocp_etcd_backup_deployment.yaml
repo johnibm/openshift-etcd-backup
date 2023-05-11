@@ -1,3 +1,13 @@
+#Create Namespace
+#Create Service Account
+---
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: openshift-backup
+  namespace: ocp-etcd-backup
+  labels:
+    app: openshift-backup
 ---
 apiVersion: apps/v1
 kind: Deployment
