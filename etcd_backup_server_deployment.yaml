@@ -1,0 +1,49 @@
+#Create Backup Server Deployment
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: etcd-backup-server-deployment
+  namespace: ocp-etcd-backup
+  labels:
+    app: etcd-backup
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: etcd-backup
+  template:
+    metadata:
+      labels:
+        app: etcd-backup
+    spec: 
+      #initContainers:
+      #- name: init
+      #  image: alpine
+      #  imagePullPolicy: Always
+      #  command: ['sh', '-c', 'mkdir -p -m 777 /openshift_etcd_backup/data']
+      #  
+      #  volumeMounts:                     
+      #    - name: etcd-backup-vol
+      #      mountPath: /openshift_etcd_backup
+      containers:
+      - name: etcd-backup-server
+        image: "registry.redhat.io/openshift4/ose-cli"
+        imagePullPolicy: Always
+        command: ['/bin/bash', '-c', 'while true; do sleep 30; done;']
+        volumeMounts:                     
+          - name: etcd-backup-vol
+            mountPath: /openshift_etcd_backup
+      volumes:
+        - name: etcd-backup-vol
+          persistentVolumeClaim:
+            claimName: etcd-backup-pvc                
+      resources:
+      requests:
+        memory: "64Mi"
+        cpu: "250m"
+      limits:
+        memory: "128Mi"
+        cpu: "500m"
+
+

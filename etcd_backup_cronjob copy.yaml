@@ -10,7 +10,7 @@ metadata:
     pod-security.kubernetes.io/warn: privileged
   annotations:
     openshift.io/node-selector: ''
-    
+
 #Create Service Account
 ---
 kind: ServiceAccount
@@ -89,14 +89,21 @@ spec:
               command:
                 - "/bin/bash"
                 - "-c"
-                - oc get no -l node-role.kubernetes.io/master --no-headers -o name | xargs -I {} --  oc debug {} -- bash -c 'chroot /host sudo -E /usr/local/bin/cluster-backup.sh /home/core/backup/ && chroot /host sudo -E find /home/core/backup/ -type f -mmin +"1" -delete'
+                #- oc get no -l node-role.kubernetes.io/master --no-headers -o name | xargs -I {} --  oc debug {} -- bash -c 'chroot /host sudo -E /usr/local/bin/cluster-backup.sh /home/core/backup/ && chroot /host sudo -E find /home/core/backup/ -type f -mmin +"1" -delete'
+                #- oc get no -l node-role.kubernetes.io/master --no-headers -o name | xargs -I {} --  oc debug {} -- bash -c 'chroot /host sudo -E /usr/local/bin/cluster-backup.sh /home/core/backup/ && target_dir="$(date +"%m-%d-%Y-%H-%M-%S")" && cp /home/core/backup/*.* /openshift_etcd_backup/$target_dir && chroot /host sudo -E find /home/core/backup/ -type f -mmin +"1" -delete'
+              volumeMounts:                     
+                - name: etcd-backup-vol
+                  mountPath: /openshift_etcd_backup
+          volumes:
+            - name: etcd-backup-vol
+              persistentVolumeClaim:
+              claimName: etcd-backup-pvc   
           restartPolicy: "Never"
           terminationGracePeriodSeconds: 30
           activeDeadlineSeconds: 500
           dnsPolicy: "ClusterFirst"
           serviceAccountName: "openshift-backup"
           serviceAccount: "openshift-backup"
-
-
 #Force CronJob to run
 #oc create job backup --from=cronjob/openshift-backup
+

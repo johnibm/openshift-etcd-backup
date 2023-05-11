@@ -3,7 +3,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: etcd-backup-deployment
+  name: ocp-cli-deployment
   namespace: ocp-etcd-backup
   labels:
     app: etcd-backup
@@ -17,18 +17,9 @@ spec:
       labels:
         app: etcd-backup
     spec: 
-      initContainers:
-      - name: init
-        image: alpine
-        imagePullPolicy: Always
-        command: ['sh', '-c', 'mkdir -p -m 777 /openshift_etcd_backup/data']
-        
-        volumeMounts:                     
-          - name: etcd-backup-vol
-            mountPath: /openshift_etcd_backup
       containers:
-      - name: etcd-backup
-        image: alpine
+      - name: ocp-cli
+        image: "registry.redhat.io/openshift4/ose-cli"
         imagePullPolicy: Always
         command: ['sh', '-c', 'while true; do sleep 30; done;']
         volumeMounts:                     
@@ -45,17 +36,4 @@ spec:
       limits:
         memory: "128Mi"
         cpu: "500m"
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: etcd-backup-pvc
-  labels:
-    appname: etcd-backup
-spec:
-  accessModes: [ "ReadWriteMany" ]
-  storageClassName: "ocs-storagecluster-cephfs"
-  resources:
-    requests:
-      storage: 100Gi
 
