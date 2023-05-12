@@ -5,9 +5,8 @@ Project to test OpenShift etcd database backup
 This approach will use the recommnended etcd backup methodolgy from Redhat along with an extra process to move etcd backup data to an external PVC.<br>
 
 ### Step 1: Implement OpenShift etcd backup via CronJob:
-```
 Details in [etcd_backup_cronjob.yaml](/etcd_backup_cronjob.yaml)
-```
+
 ### Step 2: Add Backup Server Deployment to copy files from control node to PVC
 ```
 oc apply -f etcd_backup_server_deployment.yaml
