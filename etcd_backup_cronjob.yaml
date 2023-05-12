@@ -1,4 +1,4 @@
-#Create Namespace
+# Create Namespace
 ---
 apiVersion: v1
 kind: Namespace
@@ -12,7 +12,7 @@ metadata:
   annotations:
     openshift.io/node-selector: ''
 
-#Create Service Account
+# Create Service Account
 ---
 kind: ServiceAccount
 apiVersion: v1
@@ -22,7 +22,7 @@ metadata:
   labels:
     app: openshift-etcd-backup
 
-#Create Cluster Role
+# Create Cluster Role
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -40,7 +40,7 @@ rules:
      - "pods/log"
   verbs: ["get", "list", "create", "delete", "watch"]
 
-#Create Cluster Role Binding
+# Create Cluster Role Binding
 ---
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
@@ -56,10 +56,10 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
   name: openshift-etcd-backup
-#Set privileges for servcie account
-#oc adm policy add-scc-to-user privileged -z openshift-etcd-backup
+# Set privileges for servcie account
+# oc adm policy add-scc-to-user privileged -z openshift-etcd-backup
 
-#Create CronJob
+# Create CronJob
 ---
 kind: CronJob
 apiVersion: batch/v1
@@ -98,6 +98,6 @@ spec:
           dnsPolicy: "ClusterFirst"
           serviceAccountName: "openshift-etcd-backup"
           serviceAccount: "openshift-etcd-backup"
-#Force CronJob to run
-#oc create job backup --from=cronjob/openshift-etcd-backup
+# Submit Job to run from CronJob
+# oc create job job-"`date +"%m-%d-%Y-%H-%M-%S"`"-backup --from=cronjob/openshift-etcd-backup
 
