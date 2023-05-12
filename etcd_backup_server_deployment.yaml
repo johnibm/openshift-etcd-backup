@@ -29,10 +29,8 @@ spec:
         - name: openshift-etcd-backup-vol
           persistentVolumeClaim:
             claimName: openshift-etcd-backup-pvc      
-      
       serviceAccountName: "openshift-etcd-backup"
       serviceAccount: "openshift-etcd-backup"
-
       resources:
       requests:
         memory: "64Mi"
