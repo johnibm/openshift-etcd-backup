@@ -50,5 +50,18 @@ spec:
       limits:
         memory: "128Mi"
         cpu: "500m"
-
+# Create PVC
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: openshift-etcd-backup-pvc
+  labels:
+    appname: openshift-etcd-backup
+spec:
+  accessModes: [ "ReadWriteMany" ]
+  storageClassName: "ocs-storagecluster-cephfs"
+  resources:
+    requests:
+      storage: 100Gi
 
