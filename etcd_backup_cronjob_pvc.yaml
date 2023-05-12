@@ -59,21 +59,6 @@ roleRef:
 #Set privileges for servcie account
 #oc adm policy add-scc-to-user privileged -z openshift-etcd-backup
 
-# Create PVC
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: openshift-etcd-backup-pvc
-  labels:
-    appname: openshift-etcd-backup
-spec:
-  accessModes: [ "ReadWriteMany" ]
-  storageClassName: "ocs-storagecluster-cephfs"
-  resources:
-    requests:
-      storage: 100Gi
-
 #Create CronJob
 ---
 kind: CronJob
@@ -109,13 +94,7 @@ spec:
                 #- oc get no -l node-role.kubernetes.io/master --no-headers -o name | xargs -I {} --  oc debug {} -- bash -c 'chroot /host sudo -E target_dir="$(date +"%m-%d-%Y-%H-%M-%S")" && mkdir -p -m 777 /openshift_etcd_backup/$target_dir && /usr/local/bin/cluster-backup.sh /home/core/backup/ && cp /home/core/backup/*.* /openshift_etcd_backup/$target_dir && chroot /host sudo -E find /home/core/backup/ -type f -mmin +"1" -delete'
                 #- oc get no -l node-role.kubernetes.io/master --no-headers -o name | xargs -I {} --  oc debug {} -- bash -c 'chroot /host sudo -E target_dir="$(date +"%m-%d-%Y-%H-%M-%S")" && chroot /host sudo -E mkdir -p -m 777 /openshift_etcd_backup/$target_dir && chroot /host sudo -E /usr/local/bin/cluster-backup.sh /openshift_etcd_backup/$target_dir && chroot /host sudo -E find /home/core/backup/ -type f -mmin +"1" -delete'
                 #- oc get no -l node-role.kubernetes.io/master --no-headers -o name | xargs -I {} --  oc debug {} -- bash -c 'chroot /host sudo -E /usr/local/bin/cluster-backup.sh /openshift_etcd_backup/$(date) && chroot /host sudo -E find /home/core/backup/ -type f -mmin +"1" -delete'
-              volumeMounts:                     
-                - name: openshift-etcd-backup-vol
-                  mountPath: /openshift_etcd_backup
-          volumes:
-            - name: openshift-etcd-backup-vol
-              persistentVolumeClaim:
-              claimName: openshift-etcd-backup-pvc   
+                
           restartPolicy: "Never"
           terminationGracePeriodSeconds: 30
           activeDeadlineSeconds: 500
