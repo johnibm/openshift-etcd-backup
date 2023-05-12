@@ -17,20 +17,10 @@ spec:
       labels:
         app: openshift-etcd-backup-server
     spec: 
-      #initContainers:
-      #- name: init
-      #  image: alpine
-      #  imagePullPolicy: Always
-      #  command: ['sh', '-c', 'mkdir -p -m 777 /openshift_etcd_backup/data']
-      #  
-      #  volumeMounts:                     
-      #    - name: etcd-backup-vol
-      #      mountPath: /openshift_etcd_backup
       containers:
       - name: server
         image: "registry.redhat.io/openshift4/ose-cli"
         imagePullPolicy: Always
-        #command: ['/bin/bash', '-c', 'while true; do sleep 30; done;']
         command: ['/bin/bash', '-c', 'while true; do node=$(oc get node -l node-role.kubernetes.io/master= --no-headers -ojsonpath="{.items[0].metadata.name}") && server_pod=$(oc get pods -l app=openshift-etcd-backup-server -ojsonpath="{.items[0].metadata.name}"); oc debug node/$node -T -- chroot /host sh -c "oc cp /home/core/backup $server_pod:/openshift_etcd_backup/"; sleep 300; done;']
         volumeMounts:                     
           - name: openshift-etcd-backup-vol
